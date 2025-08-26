@@ -22,6 +22,14 @@ export default function Header() {
             </div>
           </div>
           
+          {/* Navigation Menu */}
+          <nav style={{display: 'flex', alignItems: 'center', gap: '2rem'}}>
+            <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Home</a>
+            <a href="/store" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Store</a>
+            <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>About</a>
+            <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Contact</a>
+          </nav>
+          
           <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
             <button
               onClick={() => window.location.href = '/wishlist'}

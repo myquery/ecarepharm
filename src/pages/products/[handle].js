@@ -15,10 +15,81 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState('description');
   const { addToCart, getCartCount, setIsCartOpen } = useCart();
 
+  // Show loading while router is not ready or handle is not available
+  if (!router.isReady || !handle) {
+    return (
+      <>
+        <Head>
+          <title>Loading... - eCare Pharmacy</title>
+        </Head>
+        <div style={{fontFamily: 'system-ui, -apple-system, sans-serif', backgroundColor: '#ffffff', minHeight: '100vh'}}>
+          <Header />
+          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh'}}>
+            <div style={{textAlign: 'center'}}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                border: '4px solid #f3f4f6',
+                borderTop: '4px solid #3b82f6',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1rem'
+              }}></div>
+              <p style={{color: '#64748b', fontSize: '1rem'}}>Loading product...</p>
+            </div>
+          </div>
+          <Footer />
+        </div>
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </>
+    );
+  }
+
   const product = dummyProducts.find(p => p.handle === handle);
 
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <>
+        <Head>
+          <title>Product Not Found - eCare Pharmacy</title>
+        </Head>
+        <div style={{fontFamily: 'system-ui, -apple-system, sans-serif', backgroundColor: '#ffffff', minHeight: '100vh'}}>
+          <Header />
+          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh'}}>
+            <div style={{textAlign: 'center', padding: '2rem'}}>
+              <div style={{fontSize: '4rem', marginBottom: '1rem'}}>🔍</div>
+              <h2 style={{fontSize: '1.5rem', fontWeight: '600', color: '#1e293b', marginBottom: '1rem'}}>
+                Product Not Found
+              </h2>
+              <p style={{color: '#64748b', marginBottom: '2rem'}}>
+                The product you're looking for doesn't exist or has been removed.
+              </p>
+              <button
+                onClick={() => router.push('/')}
+                style={{
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  padding: '1rem 2rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
+          <Footer />
+        </div>
+      </>
+    );
   }
 
   const handleAddToCart = () => {
@@ -64,7 +135,7 @@ export default function ProductDetail() {
   return (
     <>
       <Head>
-        <title>{product.title} - PharmaCare</title>
+        <title>{product.title} - eCare Pharmacy</title>
       </Head>
 
       <div style={{fontFamily: 'system-ui, -apple-system, sans-serif', backgroundColor: '#ffffff', minHeight: '100vh'}}>

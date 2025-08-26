@@ -289,10 +289,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Search & Categories */}
+        {/* Search */}
         <section style={{backgroundColor: 'white', padding: '2rem 1.5rem', boxShadow: '0 2px 4px rgba(0,0,0,0.05)'}}>
           <div style={{maxWidth: '1000px', margin: '0 auto'}}>
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem'}}>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
               <div style={{position: 'relative', width: '100%', maxWidth: '500px'}}>
                 <input
                   type="text"
@@ -322,39 +322,121 @@ export default function Home() {
                   <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
                 </svg>
               </div>
-              
-              <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem'}}>
-                {categories.map((category) => (
-                  <button
+            </div>
+          </div>
+        </section>
+
+        {/* Categories */}
+        <section style={{padding: '2rem 0', backgroundColor: '#f8fafc'}}>
+          <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem'}}>
+            <div style={{textAlign: 'center', marginBottom: '2rem'}}>
+              <h2 style={{fontSize: '1.75rem', fontWeight: 'bold', color: '#1e293b', margin: '0 0 0.5rem 0'}}>
+                Shop by Category
+              </h2>
+              <p style={{color: '#64748b', fontSize: '1rem', margin: 0}}>Find the right products for your health needs</p>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              overflowX: 'auto',
+              paddingBottom: '0.5rem',
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#cbd5e1 #f1f5f9',
+              justifyContent: 'center'
+            }}>
+              {categories.filter(cat => cat !== 'All Products').map((category) => {
+                const categoryImages = {
+                  'Pain Relief': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
+                  'Vitamins': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
+                  'Supplements': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop',
+                  'First Aid': 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=400&fit=crop',
+                  'Personal Care': 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
+                  'Baby Care': 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=400&fit=crop'
+                };
+                
+                return (
+                  <div
                     key={category}
                     onClick={() => setSelectedCategory(category)}
                     style={{
-                      padding: '0.75rem 1.5rem',
-                      borderRadius: '25px',
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      border: selectedCategory === category ? 'none' : '2px solid #e2e8f0',
+                      backgroundColor: 'white',
+                      borderRadius: '16px',
+                      overflow: 'hidden',
                       cursor: 'pointer',
-                      transition: 'all 0.3s',
-                      backgroundColor: selectedCategory === category ? '#3b82f6' : 'white',
-                      color: selectedCategory === category ? 'white' : '#475569',
-                      boxShadow: selectedCategory === category ? '0 4px 12px rgba(59,130,246,0.3)' : '0 2px 4px rgba(0,0,0,0.05)'
+                      transition: 'all 0.3s ease',
+                      border: selectedCategory === category ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                      boxShadow: selectedCategory === category ? '0 8px 25px rgba(59,130,246,0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
+                      minWidth: '140px',
+                      flexShrink: 0,
+                      transform: selectedCategory === category ? 'translateY(-2px)' : 'translateY(0)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedCategory !== category) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.08)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedCategory !== category) {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+                      }
                     }}
                   >
-                    {category}
-                  </button>
-                ))}
-              </div>
+                    <div style={{
+                      position: 'relative',
+                      height: '100px',
+                      overflow: 'hidden'
+                    }}>
+                      <img
+                        src={categoryImages[category]}
+                        alt={category}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          transition: 'transform 0.3s ease'
+                        }}
+                      />
+                      {selectedCategory === category && (
+                        <div style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          background: 'linear-gradient(135deg, rgba(59,130,246,0.8) 0%, rgba(29,78,216,0.8) 100%)'
+                        }} />
+                      )}
+                    </div>
+                    <div style={{
+                      padding: '1rem 0.75rem',
+                      textAlign: 'center'
+                    }}>
+                      <h3 style={{
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        color: selectedCategory === category ? '#3b82f6' : '#1e293b',
+                        margin: 0,
+                        lineHeight: '1.2'
+                      }}>
+                        {category}
+                      </h3>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* Products */}
-        <section style={{padding: '3rem 1.5rem'}}>
+        <section style={{padding: '2rem 1.5rem'}}>
           <div style={{maxWidth: '1300px', margin: '0 auto'}}>
             <div style={{textAlign: 'center', marginBottom: '3rem'}}>
               <h2 style={{fontSize: '2.25rem', fontWeight: 'bold', color: '#1e293b', margin: '0 0 0.5rem 0'}}>
-                {searchQuery ? `"${searchQuery}"` : selectedCategory}
+                {searchQuery ? `Search Results for "${searchQuery}"` : selectedCategory}
               </h2>
               <p style={{color: '#64748b', fontSize: '1.125rem', margin: 0}}>{filteredProducts.length} products found</p>
             </div>
