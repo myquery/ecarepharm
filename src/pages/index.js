@@ -59,7 +59,7 @@ export default function Home() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: 'url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=1200&h=600&fit=crop")',
+            backgroundImage: 'url("https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=1200&h=600&fit=crop")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             zIndex: -1
@@ -216,7 +216,7 @@ export default function Home() {
                 </div>
                 <div style={{position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', opacity: 0.3}}>
                   <img
-                    src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop"
+                    src="https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=400&fit=crop"
                     alt="Healthcare products"
                     style={{width: '100%', height: '100%', objectFit: 'cover'}}
                   />
@@ -248,7 +248,7 @@ export default function Home() {
                   </div>
                   <div style={{position: 'absolute', right: '-20px', top: '50%', transform: 'translateY(-50%)', width: '80px', height: '80px', opacity: 0.2}}>
                     <img
-                      src="https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=200&h=200&fit=crop"
+                      src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop"
                       alt="Vitamins"
                       style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%'}}
                     />
@@ -278,7 +278,7 @@ export default function Home() {
                   </div>
                   <div style={{position: 'absolute', right: '-20px', top: '50%', transform: 'translateY(-50%)', width: '80px', height: '80px', opacity: 0.2}}>
                     <img
-                      src="https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=200&h=200&fit=crop"
+                      src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=200&h=200&fit=crop"
                       alt="First aid kit"
                       style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%'}}
                     />
@@ -347,12 +347,12 @@ export default function Home() {
             }}>
               {categories.filter(cat => cat !== 'All Products').map((category) => {
                 const categoryImages = {
-                  'Pain Relief': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
-                  'Vitamins': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
-                  'Supplements': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop',
-                  'First Aid': 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=400&fit=crop',
-                  'Personal Care': 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
-                  'Baby Care': 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=400&fit=crop'
+                  'Pain Relief': 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=400&fit=crop',
+                  'Vitamins': 'https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=400&fit=crop',
+                  'Supplements': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
+                  'First Aid': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
+                  'Personal Care': 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=400&fit=crop',
+                  'Baby Care': 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop'
                 };
                 
                 return (

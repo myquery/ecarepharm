@@ -13,7 +13,7 @@ export const dummyProducts = [
     images: {
       edges: [{
         node: {
-          url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
+          url: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=400&fit=crop',
           altText: 'Paracetamol tablets'
         }
       }]
@@ -42,7 +42,7 @@ export const dummyProducts = [
     images: {
       edges: [{
         node: {
-          url: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
+          url: 'https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=400&fit=crop',
           altText: 'Vitamin D3 capsules'
         }
       }]
@@ -100,7 +100,7 @@ export const dummyProducts = [
     images: {
       edges: [{
         node: {
-          url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop',
+          url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
           altText: 'Omega-3 fish oil capsules'
         }
       }]
@@ -129,7 +129,7 @@ export const dummyProducts = [
     images: {
       edges: [{
         node: {
-          url: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=400&fit=crop',
+          url: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
           altText: 'Antiseptic cream tube'
         }
       }]
@@ -187,7 +187,7 @@ export const dummyProducts = [
     images: {
       edges: [{
         node: {
-          url: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
+          url: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=400&fit=crop',
           altText: 'Cough syrup bottle'
         }
       }]
@@ -216,7 +216,7 @@ export const dummyProducts = [
     images: {
       edges: [{
         node: {
-          url: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=400&fit=crop',
+          url: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop',
           altText: 'Digital blood pressure monitor'
         }
       }]

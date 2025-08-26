@@ -3,8 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/products/[handle]": "pages/products/[handle].js",
   "/store": "pages/store.js",
-  "/checkout": "pages/checkout.js",
   "/wishlist": "pages/wishlist.js"
 }
