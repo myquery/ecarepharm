@@ -1,8 +1,15 @@
 import '../styles/globals.css'
 import { CartProvider } from '../context/CartContext'
 import Cart from '../components/Cart'
+import { useEffect } from 'react'
 
 export default function App({ Component, pageProps }) {
+  useEffect(() => {
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+      navigator.serviceWorker.register('/sw.js')
+    }
+  }, [])
+
   return (
     <CartProvider>
       <Component {...pageProps} />

@@ -29,32 +29,29 @@ export default function Home() {
       <Head>
         <title>eCare Pharmacy - Quality Healthcare Solutions</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1e40af" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </Head>
 
       <div style={{fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh', backgroundColor: '#f1f5f9'}}>
         {/* Header */}
         <header style={{backgroundColor: '#1e40af', color: 'white', padding: '1rem 0'}}>
-          <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
-              <div style={{backgroundColor: 'rgba(255,255,255,0.2)', padding: '0.75rem', borderRadius: '50%'}}>
-                <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/>
-                </svg>
+          <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 1rem'}}>
+            {/* Main Header Row */}
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: window.innerWidth <= 768 ? '1rem' : '0'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                <div style={{backgroundColor: 'rgba(255,255,255,0.2)', padding: '0.5rem', borderRadius: '50%'}}>
+                  <svg width={window.innerWidth <= 768 ? "20" : "28"} height={window.innerWidth <= 768 ? "20" : "28"} fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h1 style={{fontSize: window.innerWidth <= 768 ? '1.25rem' : '2rem', fontWeight: 'bold', margin: 0}}>eCare Pharmacy</h1>
+                  <p style={{opacity: 0.9, margin: 0, fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.875rem', display: window.innerWidth <= 480 ? 'none' : 'block'}}>Quality Healthcare Solutions</p>
+                </div>
               </div>
-              <div>
-                <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: 0}}>eCare Pharmacy</h1>
-                <p style={{opacity: 0.9, margin: 0, fontSize: '0.875rem'}}>Quality Healthcare Solutions</p>
-              </div>
-            </div>
-            <div style={{display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '0.875rem'}}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <span>📞</span>
-                <span>+243 (080) 123-4567-23</span>
-              </div>
-              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <span>🚚</span>
-                <span>Free Delivery</span>
-              </div>
+              
               <button
                 onClick={() => setIsCartOpen(true)}
                 style={{
@@ -73,7 +70,7 @@ export default function Home() {
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
                 </svg>
-                <span>Cart</span>
+                <span style={{display: window.innerWidth <= 480 ? 'none' : 'inline'}}>Cart</span>
                 {getCartCount() > 0 && (
                   <span style={{
                     position: 'absolute',
@@ -93,6 +90,18 @@ export default function Home() {
                 )}
               </button>
             </div>
+            
+            {/* Contact Info Row - Hidden on mobile */}
+            <div style={{display: window.innerWidth <= 768 ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', fontSize: '0.875rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)'}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                <span>📞</span>
+                <span>+234 (080) 123-4567-23</span>
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                <span>🚚</span>
+                <span>Free Delivery</span>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -101,8 +110,8 @@ export default function Home() {
           position: 'relative',
           background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%)',
           color: 'white',
-          padding: '4rem 1.5rem',
-          minHeight: '500px',
+          padding: window.innerWidth <= 768 ? '2rem 1rem' : '4rem 1.5rem',
+          minHeight: window.innerWidth <= 768 ? '400px' : '500px',
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden'
@@ -120,22 +129,22 @@ export default function Home() {
             zIndex: -1
           }}></div>
           
-          <div style={{maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center'}}>
+          <div style={{maxWidth: '1200px', margin: '0 auto', width: '100%', display: window.innerWidth <= 768 ? 'block' : 'grid', gridTemplateColumns: window.innerWidth <= 768 ? 'none' : '1fr 1fr', gap: window.innerWidth <= 768 ? '2rem' : '3rem', alignItems: 'center', textAlign: window.innerWidth <= 768 ? 'center' : 'left'}}>
             <div>
-              <h2 style={{fontSize: '3.5rem', fontWeight: 'bold', margin: '0 0 1.5rem 0', lineHeight: '1.1'}}>
+              <h2 style={{fontSize: window.innerWidth <= 480 ? '2rem' : window.innerWidth <= 768 ? '2.5rem' : '3.5rem', fontWeight: 'bold', margin: '0 0 1.5rem 0', lineHeight: '1.1'}}>
                 Your Health, Our Priority
               </h2>
-              <p style={{fontSize: '1.25rem', opacity: 0.95, margin: '0 0 2.5rem 0', lineHeight: '1.6'}}>
+              <p style={{fontSize: window.innerWidth <= 768 ? '1rem' : '1.25rem', opacity: 0.95, margin: '0 0 2.5rem 0', lineHeight: '1.6'}}>
                 Discover quality medications and healthcare products with professional consultation from certified pharmacists
               </p>
-              <div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap'}}>
+              <div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: window.innerWidth <= 768 ? 'center' : 'flex-start'}}>
                 <button style={{
                   backgroundColor: 'white',
                   color: '#1e40af',
-                  padding: '1rem 2rem',
+                  padding: window.innerWidth <= 768 ? '0.75rem 1.5rem' : '1rem 2rem',
                   borderRadius: '25px',
                   border: 'none',
-                  fontSize: '1rem',
+                  fontSize: window.innerWidth <= 768 ? '0.875rem' : '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
@@ -154,10 +163,10 @@ export default function Home() {
                 <button style={{
                   backgroundColor: 'transparent',
                   color: 'white',
-                  padding: '1rem 2rem',
+                  padding: window.innerWidth <= 768 ? '0.75rem 1.5rem' : '1rem 2rem',
                   borderRadius: '25px',
                   border: '2px solid rgba(255,255,255,0.3)',
-                  fontSize: '1rem',
+                  fontSize: window.innerWidth <= 768 ? '0.875rem' : '1rem',
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease'
@@ -175,30 +184,32 @@ export default function Home() {
               </div>
             </div>
             
-            <div style={{display: 'flex', justifyContent: 'center'}}>
+            <div style={{display: 'flex', justifyContent: 'center', marginTop: window.innerWidth <= 768 ? '2rem' : '0'}}>
               <div style={{
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 borderRadius: '20px',
-                padding: '2rem',
+                padding: window.innerWidth <= 768 ? '1.5rem' : '2rem',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.2)'
+                border: '1px solid rgba(255,255,255,0.2)',
+                width: window.innerWidth <= 768 ? '100%' : 'auto',
+                maxWidth: window.innerWidth <= 768 ? '400px' : 'none'
               }}>
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', textAlign: 'center'}}>
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: window.innerWidth <= 768 ? '1rem' : '1.5rem', textAlign: 'center'}}>
                   <div>
-                    <div style={{fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>500+</div>
-                    <div style={{fontSize: '0.875rem', opacity: 0.9}}>Products</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '1.75rem' : '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>500+</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.875rem', opacity: 0.9}}>Products</div>
                   </div>
                   <div>
-                    <div style={{fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>24/7</div>
-                    <div style={{fontSize: '0.875rem', opacity: 0.9}}>Support</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '1.75rem' : '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>24/7</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.875rem', opacity: 0.9}}>Support</div>
                   </div>
                   <div>
-                    <div style={{fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>10k+</div>
-                    <div style={{fontSize: '0.875rem', opacity: 0.9}}>Customers</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '1.75rem' : '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>10k+</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.875rem', opacity: 0.9}}>Customers</div>
                   </div>
                   <div>
-                    <div style={{fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>99%</div>
-                    <div style={{fontSize: '0.875rem', opacity: 0.9}}>Satisfaction</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '1.75rem' : '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>99%</div>
+                    <div style={{fontSize: window.innerWidth <= 768 ? '0.75rem' : '0.875rem', opacity: 0.9}}>Satisfaction</div>
                   </div>
                 </div>
               </div>
