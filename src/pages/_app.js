@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import { CartProvider } from '../context/CartContext'
+import { WishlistProvider } from '../context/WishlistContext'
 import Cart from '../components/Cart'
 import { useEffect } from 'react'
 
@@ -11,9 +12,11 @@ export default function App({ Component, pageProps }) {
   }, [])
 
   return (
-    <CartProvider>
-      <Component {...pageProps} />
-      <Cart />
-    </CartProvider>
+    <WishlistProvider>
+      <CartProvider>
+        <Component {...pageProps} />
+        <Cart />
+      </CartProvider>
+    </WishlistProvider>
   )
 }
