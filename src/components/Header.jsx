@@ -1,9 +1,19 @@
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 
 export default function Header() {
   const { getCartCount, setIsCartOpen } = useCart();
   const { getWishlistCount } = useWishlist();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <header style={{backgroundColor: '#1e40af', color: 'white', padding: '1rem 0'}}>
@@ -17,20 +27,38 @@ export default function Header() {
               </svg>
             </div>
             <div>
-              <h1 style={{fontSize: '2rem', fontWeight: 'bold', margin: 0}}>eCare Pharmacy</h1>
-              <p style={{opacity: 0.9, margin: 0, fontSize: '0.875rem'}}>Quality Healthcare Solutions</p>
+              <h1 style={{fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 'bold', margin: 0}}>eCare Pharmacy</h1>
+              {!isMobile && <p style={{opacity: 0.9, margin: 0, fontSize: '0.875rem'}}>Quality Healthcare Solutions</p>}
             </div>
           </div>
           
           {/* Navigation Menu */}
-          <nav style={{display: 'flex', alignItems: 'center', gap: '2rem'}}>
-            <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Home</a>
-            <a href="/store" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Store</a>
-            <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>About</a>
-            <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Contact</a>
-          </nav>
+          {!isMobile ? (
+            <nav style={{display: 'flex', alignItems: 'center', gap: '2rem'}}>
+              <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Home</a>
+              <a href="/store" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Store</a>
+              <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>About</a>
+              <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Contact</a>
+            </nav>
+          ) : (
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{
+                background: 'rgba(255,255,255,0.2)',
+                border: 'none',
+                color: 'white',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+              </svg>
+            </button>
+          )}
           
-          <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: isMobile ? '0.5rem' : '1rem'}}>
             <button
               onClick={() => window.location.href = '/wishlist'}
               style={{
@@ -49,7 +77,7 @@ export default function Header() {
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
-              <span>Wishlist</span>
+              {!isMobile && <span>Wishlist</span>}
               {getWishlistCount() > 0 && (
                 <span style={{
                   position: 'absolute',
@@ -87,7 +115,7 @@ export default function Header() {
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
               </svg>
-              <span>Cart</span>
+              {!isMobile && <span>Cart</span>}
               {getCartCount() > 0 && (
                 <span style={{
                   position: 'absolute',
@@ -109,7 +137,18 @@ export default function Header() {
           </div>
         </div>
         
+        {/* Mobile Menu */}
+        {isMobile && isMenuOpen && (
+          <nav style={{display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '1rem'}}>
+            <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Home</a>
+            <a href="/store" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Store</a>
+            <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>About</a>
+            <a href="#" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Contact</a>
+          </nav>
+        )}
+        
         {/* Contact Info Row */}
+        {!isMobile && (
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', fontSize: '0.875rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '1rem'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
             <span>📞</span>
@@ -120,6 +159,7 @@ export default function Header() {
             <span>Free Delivery</span>
           </div>
         </div>
+        )}
       </div>
     </header>
   );

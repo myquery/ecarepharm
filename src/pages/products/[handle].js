@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { formatCurrency, convertPrice } from '../../utils/currency';
@@ -12,7 +12,15 @@ export default function ProductDetail({ product, relatedProducts }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
+  const [isMobile, setIsMobile] = useState(false);
   const { addToCart, getCartCount, setIsCartOpen } = useCart();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (router.isFallback) {
     return (
@@ -118,7 +126,7 @@ export default function ProductDetail({ product, relatedProducts }) {
 
         {/* Product Detail */}
         <div style={{maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem'}}>
-          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem'}}>
+          <div style={{display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '2rem' : '4rem'}}>
             
             {/* Image Gallery */}
             <div>
@@ -313,7 +321,7 @@ export default function ProductDetail({ product, relatedProducts }) {
             {/* Tab Content */}
             <div style={{marginBottom: '3rem'}}>
               {activeTab === 'description' && (
-                <div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '3rem'}}>
+                <div style={{display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: isMobile ? '2rem' : '3rem'}}>
                   <div>
                     <h3 style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1rem'}}>Product Description</h3>
                     <div style={{color: '#64748b', lineHeight: '1.7', fontSize: '1rem'}}>
@@ -410,7 +418,7 @@ export default function ProductDetail({ product, relatedProducts }) {
               {activeTab === 'info' && (
                 <div>
                   <h3 style={{fontSize: '1.5rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '2rem'}}>Additional Information</h3>
-                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem'}}>
+                  <div style={{display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '2rem' : '3rem'}}>
                     <div>
                       <h4 style={{fontSize: '1.125rem', fontWeight: '600', color: '#1e293b', marginBottom: '1rem'}}>Usage Instructions</h4>
                       <div style={{color: '#64748b', lineHeight: '1.6', marginBottom: '2rem'}}>
@@ -450,7 +458,7 @@ export default function ProductDetail({ product, relatedProducts }) {
           {/* Related Products */}
           <div style={{marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid #e2e8f0'}}>
             <h2 style={{fontSize: '2rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '2rem', textAlign: 'center'}}>Related Products</h2>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem'}}>
+            <div style={{display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem'}}>
               {relatedProducts.map((relatedProduct) => (
                 <div key={relatedProduct.id} style={{
                   backgroundColor: 'white',

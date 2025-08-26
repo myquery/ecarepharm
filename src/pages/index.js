@@ -15,8 +15,16 @@ export default function Home({ products }) {
   const [categories, setCategories] = useState(['All Products']);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(12);
+  const [isMobile, setIsMobile] = useState(false);
   const { addToCart, getCartCount, setIsCartOpen } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (allProducts.length > 0) {
@@ -82,15 +90,15 @@ export default function Home({ products }) {
             zIndex: 1
           }}></div>
           
-          <div style={{maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center', position: 'relative', zIndex: 2}}>
+          <div style={{maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '3rem', alignItems: 'center', position: 'relative', zIndex: 2}}>
             <div>
-              <h2 style={{fontSize: '3.5rem', fontWeight: 'bold', margin: '0 0 1.5rem 0', lineHeight: '1.1'}}>
+              <h2 style={{fontSize: isMobile ? '2.5rem' : '3.5rem', fontWeight: 'bold', margin: '0 0 1.5rem 0', lineHeight: '1.1', textAlign: isMobile ? 'center' : 'left'}}>
                 Your Health, Our Priority
               </h2>
-              <p style={{fontSize: '1.25rem', opacity: 0.95, margin: '0 0 2.5rem 0', lineHeight: '1.6'}}>
+              <p style={{fontSize: isMobile ? '1rem' : '1.25rem', opacity: 0.95, margin: '0 0 2.5rem 0', lineHeight: '1.6', textAlign: isMobile ? 'center' : 'left'}}>
                 Discover quality medications and healthcare products with professional consultation from certified pharmacists
               </p>
-              <div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap'}}>
+              <div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start'}}>
                 <button style={{
                   backgroundColor: 'white',
                   color: '#1e40af',
@@ -180,9 +188,9 @@ export default function Home({ products }) {
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '2fr 1fr',
+              gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr',
               gap: '24px',
-              height: '400px'
+              height: isMobile ? 'auto' : '400px'
             }}>
               {/* Main Featured Offer */}
               <div style={{
@@ -200,8 +208,8 @@ export default function Home({ products }) {
                   <div style={{position: 'absolute', top: '2rem', right: '2rem', backgroundColor: '#ef4444', padding: '0.75rem 1.5rem', borderRadius: '25px', fontSize: '1rem', fontWeight: '700'}}>
                     50% OFF
                   </div>
-                  <h3 style={{fontSize: '3rem', fontWeight: 'bold', margin: '0 0 1rem 0', lineHeight: '1.1'}}>Mega Health Sale</h3>
-                  <p style={{opacity: 0.9, margin: '0 0 2rem 0', fontSize: '1.25rem', maxWidth: '400px'}}>Get up to 50% off on premium healthcare products and medications</p>
+                  <h3 style={{fontSize: isMobile ? '2rem' : '3rem', fontWeight: 'bold', margin: '0 0 1rem 0', lineHeight: '1.1'}}>Mega Health Sale</h3>
+                  <p style={{opacity: 0.9, margin: '0 0 2rem 0', fontSize: isMobile ? '1rem' : '1.25rem', maxWidth: '400px'}}>Get up to 50% off on premium healthcare products and medications</p>
                   <div style={{display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem'}}>
                     <span style={{fontSize: '1.5rem', fontWeight: 'bold', textDecoration: 'line-through', opacity: 0.7}}>₦85,000</span>
                     <span style={{fontSize: '2.5rem', fontWeight: 'bold'}}>₦42,500</span>
