@@ -44,7 +44,9 @@ export default function Home() {
         {/* Hero Banner */}
         <section style={{
           position: 'relative',
-          background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%)',
+          backgroundImage: 'url("https://thenicheng.com/wp-content/uploads/2022/09/pharm-ac.jpg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           color: 'white',
           padding: '4rem 1.5rem',
           minHeight: '500px',
@@ -52,20 +54,18 @@ export default function Home() {
           alignItems: 'center',
           overflow: 'hidden'
         }}>
-          {/* Background Image */}
+          {/* Overlay */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: 'url("https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=1200&h=600&fit=crop")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: -1
+            background: 'linear-gradient(135deg, rgba(30, 64, 175, 0.8) 0%, rgba(59, 130, 246, 0.7) 100%)',
+            zIndex: 1
           }}></div>
           
-          <div style={{maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center'}}>
+          <div style={{maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center', position: 'relative', zIndex: 2}}>
             <div>
               <h2 style={{fontSize: '3.5rem', fontWeight: 'bold', margin: '0 0 1.5rem 0', lineHeight: '1.1'}}>
                 Your Health, Our Priority
@@ -216,7 +216,7 @@ export default function Home() {
                 </div>
                 <div style={{position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', opacity: 0.3}}>
                   <img
-                    src="https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=400&fit=crop"
+                    src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop"
                     alt="Healthcare products"
                     style={{width: '100%', height: '100%', objectFit: 'cover'}}
                   />
