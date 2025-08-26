@@ -175,7 +175,7 @@ export default function Footer() {
                   </div>
                   <div>
                     <p style={{margin: 0, fontSize: '0.875rem', fontWeight: '600', color: 'white'}}>Email Support</p>
-                    <p style={{margin: 0, fontSize: '0.875rem', opacity: 0.8}}>support@ecarepharmacy.ng</p>
+                    <p style={{margin: 0, fontSize: '0.875rem', opacity: 0.8}}>support@ecarepharm.com</p>
                   </div>
                 </div>
                 
