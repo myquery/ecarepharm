@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { dummyProducts } from '../../data/dummyProducts';
 import { formatCurrency, convertPrice } from '../../utils/currency';
+import { useCart } from '../../context/CartContext';
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
+  const { addToCart, getCartCount, setIsCartOpen } = useCart();
 
   const product = dummyProducts.find(p => p.handle === handle);
 
@@ -17,8 +19,8 @@ export default function ProductDetail() {
     return <div>Product not found</div>;
   }
 
-  const addToCart = () => {
-    router.push('/checkout');
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
   };
 
   const images = [
@@ -73,6 +75,40 @@ export default function ProductDetail() {
               </svg>
             </button>
             <h1 style={{fontSize: '1.5rem', fontWeight: 'bold', margin: 0}}>PharmaCare</h1>
+            <button
+              onClick={() => setIsCartOpen(true)}
+              style={{
+                background: 'rgba(255,255,255,0.2)',
+                border: 'none',
+                color: 'white',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                position: 'relative',
+                marginLeft: 'auto'
+              }}
+            >
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
+              </svg>
+              {getCartCount() > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  backgroundColor: '#ef4444',
+                  color: 'white',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  minWidth: '18px',
+                  textAlign: 'center'
+                }}>
+                  {getCartCount()}
+                </span>
+              )}
+            </button>
           </div>
         </header>
 
@@ -183,7 +219,7 @@ export default function ProductDetail() {
                 </div>
 
                 <button
-                  onClick={addToCart}
+                  onClick={handleAddToCart}
                   style={{
                     background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
                     color: 'white',
@@ -486,7 +522,7 @@ export default function ProductDetail() {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push('/checkout');
+                        addToCart(relatedProduct);
                       }}>
                         Add to Cart
                       </button>
