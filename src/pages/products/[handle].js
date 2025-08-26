@@ -113,7 +113,7 @@ export default function ProductDetail({ product, relatedProducts }) {
 
         {/* Breadcrumb */}
         <div style={{backgroundColor: '#f8fafc', padding: '1rem 0', borderBottom: '1px solid #e2e8f0'}}>
-          <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem'}}>
+          <div style={{maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '0 1rem' : '0 1.5rem'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#64748b'}}>
               <span onClick={() => router.push('/')} style={{cursor: 'pointer', color: '#3b82f6'}}>Home</span>
               <span>/</span>
@@ -125,7 +125,7 @@ export default function ProductDetail({ product, relatedProducts }) {
         </div>
 
         {/* Product Detail */}
-        <div style={{maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem'}}>
+        <div style={{maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '1rem' : '2rem 1.5rem'}}>
           <div style={{display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '2rem' : '4rem'}}>
             
             {/* Image Gallery */}

@@ -2,7 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/store": "pages/store.js",
   "/": "pages/index.js",
-  "/products/[handle]": "pages/products/[handle].js",
   "/checkout": "pages/checkout.js"
 }
