@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { formatCurrency, convertPrice } from '../utils/currency';
@@ -19,6 +19,14 @@ export default function Checkout() {
     cvv: ''
   });
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -64,8 +72,15 @@ export default function Checkout() {
           </div>
         </header>
 
-        <div style={{maxWidth: '1000px', margin: '0 auto', padding: '2rem 1.5rem'}}>
-          <div style={{display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem'}}>
+        <div style={{maxWidth: '1000px', margin: '0 auto', padding: isMobile ? '1rem' : '2rem 1.5rem'}}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: '2rem',
+            '@media (min-width: 768px)': {
+              gridTemplateColumns: '1fr 350px'
+            }
+          }} className="checkout-grid">
             
             {/* Checkout Form */}
             <div>
@@ -91,7 +106,7 @@ export default function Checkout() {
                   Shipping Address
                 </h2>
                 
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem'}}>
+                <div className="form-row" style={{marginBottom: '1rem'}}>
                   <input
                     type="text"
                     name="firstName"
@@ -128,7 +143,7 @@ export default function Checkout() {
                   onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                 />
                 
-                <div style={{display: 'grid', gridTemplateColumns: '1fr 120px', gap: '1rem'}}>
+                <div className="city-zip-row">
                   <input
                     type="text"
                     name="city"
@@ -159,7 +174,7 @@ export default function Checkout() {
                   Payment Method
                 </h2>
                 
-                <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem'}}>
+                <div className="payment-methods" style={{marginBottom: '1.5rem'}}>
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('card')}
@@ -214,7 +229,7 @@ export default function Checkout() {
                       onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                     />
                     
-                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem'}}>
+                    <div className="card-details" style={{marginBottom: '1.5rem'}}>
                       <input
                         type="text"
                         name="expiryDate"
@@ -274,7 +289,7 @@ export default function Checkout() {
                 {cartItems.map((item) => (
                   <div key={item.id} style={{display: 'flex', gap: '0.75rem', marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #f1f5f9'}}>
                     <img
-                      src={item.images.edges[0]?.node.url}
+                      src={item.image || item.images?.edges?.[0]?.node?.url || '/placeholder.jpg'}
                       alt={item.title}
                       style={{width: '50px', height: '50px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e2e8f0'}}
                     />
@@ -285,7 +300,7 @@ export default function Checkout() {
                       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                         <span style={{fontSize: '0.75rem', color: '#64748b'}}>Qty: {item.quantity}</span>
                         <span style={{fontSize: '0.875rem', fontWeight: '600', color: '#059669'}}>
-                          {formatCurrency(convertPrice(item.priceRange.minVariantPrice.amount) * item.quantity)}
+                          {formatCurrency(convertPrice(item.price || item.priceRange?.minVariantPrice?.amount || 0) * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -318,6 +333,68 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+      
+      <style jsx>{`
+        .checkout-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+        
+        @media (min-width: 768px) {
+          .checkout-grid {
+            grid-template-columns: 1fr 350px;
+          }
+        }
+        
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+          .form-row {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+        
+        .city-zip-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+          .city-zip-row {
+            grid-template-columns: 1fr 120px;
+          }
+        }
+        
+        .payment-methods {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+          .payment-methods {
+            flex-direction: row;
+          }
+        }
+        
+        .card-details {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+          .card-details {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+      `}</style>
     </>
   );
 }

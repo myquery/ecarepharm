@@ -80,7 +80,7 @@ export default function Cart() {
                 marginBottom: '1rem'
               }}>
                 <img
-                  src={item.images.edges[0]?.node.url}
+                  src={item.image || item.images?.edges?.[0]?.node?.url || '/placeholder.jpg'}
                   alt={item.title}
                   style={{
                     width: '60px',
@@ -167,7 +167,7 @@ export default function Cart() {
                     color: '#059669',
                     marginTop: '0.5rem'
                   }}>
-                    {formatCurrency(convertPrice(item.priceRange.minVariantPrice.amount) * item.quantity)}
+                    {formatCurrency(convertPrice(item.price || item.priceRange?.minVariantPrice?.amount || 0) * item.quantity)}
                   </div>
                 </div>
               </div>

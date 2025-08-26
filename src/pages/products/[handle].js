@@ -105,7 +105,7 @@ export default function ProductDetail({ product, relatedProducts }) {
   return (
     <>
       <Head>
-        <title>{product.title} - eCare Pharmacy</title>
+        <title>{product?.title || 'Product'} - eCare Pharmacy</title>
       </Head>
 
       <div style={{fontFamily: 'system-ui, -apple-system, sans-serif', backgroundColor: '#ffffff', minHeight: '100vh'}}>
