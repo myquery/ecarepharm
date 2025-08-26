@@ -1,21 +1,32 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { dummyProducts, categories } from '../data/dummyProducts';
 import { formatCurrency, convertPrice } from '../utils/currency';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { getAllProducts, formatShopifyProduct } from '../lib/shopify';
 
-export default function Home() {
-  const [filteredProducts, setFilteredProducts] = useState(dummyProducts);
+export default function Home({ products }) {
+  const [allProducts, setAllProducts] = useState(products || []);
+  const [filteredProducts, setFilteredProducts] = useState(products || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Products');
+  const [categories, setCategories] = useState(['All Products']);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(12);
   const { addToCart, getCartCount, setIsCartOpen } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
-    let filtered = dummyProducts;
+    if (allProducts.length > 0) {
+      const uniqueCategories = ['All Products', ...new Set(allProducts.map(product => product.category))];
+      setCategories(uniqueCategories);
+    }
+  }, [allProducts]);
+
+  useEffect(() => {
+    let filtered = allProducts;
     if (selectedCategory !== 'All Products') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
@@ -26,7 +37,13 @@ export default function Home() {
       );
     }
     setFilteredProducts(filtered);
-  }, [searchQuery, selectedCategory]);
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, allProducts]);
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
     <>
@@ -327,33 +344,23 @@ export default function Home() {
         </section>
 
         {/* Categories */}
-        <section style={{padding: '2rem 0', backgroundColor: '#f8fafc'}}>
-          <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem'}}>
-            <div style={{textAlign: 'center', marginBottom: '2rem'}}>
-              <h2 style={{fontSize: '1.75rem', fontWeight: 'bold', color: '#1e293b', margin: '0 0 0.5rem 0'}}>
+        {!searchQuery.trim() && (
+        <section style={{padding: '3rem 1.5rem', backgroundColor: '#f8fafc'}}>
+          <div style={{maxWidth: '1200px', margin: '0 auto'}}>
+            <div style={{textAlign: 'center', marginBottom: '3rem'}}>
+              <h2 style={{fontSize: '2.25rem', fontWeight: 'bold', color: '#1e293b', margin: '0 0 0.5rem 0'}}>
                 Shop by Category
               </h2>
-              <p style={{color: '#64748b', fontSize: '1rem', margin: 0}}>Find the right products for your health needs</p>
+              <p style={{color: '#64748b', fontSize: '1.125rem', margin: 0}}>Find the right products for your health needs</p>
             </div>
 
             <div style={{
-              display: 'flex',
-              gap: '1rem',
-              overflowX: 'auto',
-              paddingBottom: '0.5rem',
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#cbd5e1 #f1f5f9',
-              justifyContent: 'center'
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1.5rem'
             }}>
               {categories.filter(cat => cat !== 'All Products').map((category) => {
-                const categoryImages = {
-                  'Pain Relief': 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=400&fit=crop',
-                  'Vitamins': 'https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=400&fit=crop',
-                  'Supplements': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
-                  'First Aid': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
-                  'Personal Care': 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=400&fit=crop',
-                  'Baby Care': 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=400&fit=crop'
-                };
+                const categoryProduct = allProducts.find(product => product.category === category);
                 
                 return (
                   <div
@@ -361,36 +368,34 @@ export default function Home() {
                     onClick={() => setSelectedCategory(category)}
                     style={{
                       backgroundColor: 'white',
-                      borderRadius: '16px',
+                      borderRadius: '20px',
                       overflow: 'hidden',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
-                      border: selectedCategory === category ? '2px solid #3b82f6' : '1px solid #e2e8f0',
-                      boxShadow: selectedCategory === category ? '0 8px 25px rgba(59,130,246,0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
-                      minWidth: '140px',
-                      flexShrink: 0,
-                      transform: selectedCategory === category ? 'translateY(-2px)' : 'translateY(0)'
+                      border: selectedCategory === category ? '3px solid #3b82f6' : '1px solid #e2e8f0',
+                      boxShadow: selectedCategory === category ? '0 12px 30px rgba(59,130,246,0.2)' : '0 4px 12px rgba(0,0,0,0.05)',
+                      transform: selectedCategory === category ? 'translateY(-4px)' : 'translateY(0)'
                     }}
                     onMouseEnter={(e) => {
                       if (selectedCategory !== category) {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.08)';
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.1)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (selectedCategory !== category) {
                         e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
                       }
                     }}
                   >
                     <div style={{
                       position: 'relative',
-                      height: '100px',
+                      height: '160px',
                       overflow: 'hidden'
                     }}>
                       <img
-                        src={categoryImages[category]}
+                        src={categoryProduct?.image || '/placeholder.jpg'}
                         alt={category}
                         style={{
                           width: '100%',
@@ -411,15 +416,15 @@ export default function Home() {
                       )}
                     </div>
                     <div style={{
-                      padding: '1rem 0.75rem',
+                      padding: '1.5rem',
                       textAlign: 'center'
                     }}>
                       <h3 style={{
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
+                        fontSize: '1.125rem',
+                        fontWeight: '700',
                         color: selectedCategory === category ? '#3b82f6' : '#1e293b',
                         margin: 0,
-                        lineHeight: '1.2'
+                        lineHeight: '1.3'
                       }}>
                         {category}
                       </h3>
@@ -430,6 +435,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
 
         {/* Products */}
         <section style={{padding: '2rem 1.5rem'}}>
@@ -438,7 +444,9 @@ export default function Home() {
               <h2 style={{fontSize: '2.25rem', fontWeight: 'bold', color: '#1e293b', margin: '0 0 0.5rem 0'}}>
                 {searchQuery ? `Search Results for "${searchQuery}"` : selectedCategory}
               </h2>
-              <p style={{color: '#64748b', fontSize: '1.125rem', margin: 0}}>{filteredProducts.length} products found</p>
+              <p style={{color: '#64748b', fontSize: '1.125rem', margin: 0}}>
+                Showing {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} products
+              </p>
             </div>
 
             <div style={{
@@ -446,7 +454,7 @@ export default function Home() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
               gap: '24px'
             }}>
-              {filteredProducts.map((product) => (
+              {currentProducts.map((product) => (
                 <div key={product.id} style={{
                   backgroundColor: 'white',
                   borderRadius: '20px',
@@ -482,7 +490,7 @@ export default function Home() {
                   {/* Image Section */}
                   <div style={{position: 'relative', overflow: 'hidden', height: '240px', group: true}}>
                     <img
-                      src={product.images.edges[0]?.node.url}
+                      src={product.image || '/placeholder.jpg'}
                       alt={product.title}
                       style={{
                         width: '100%', 
@@ -641,7 +649,7 @@ export default function Home() {
                           lineHeight: '1.2',
                           letterSpacing: '-0.025em'
                         }}>
-                          {formatCurrency(convertPrice(product.priceRange.minVariantPrice.amount))}
+                          {formatCurrency(convertPrice(product.price))}
                         </div>
                         <div style={{
                           fontSize: '0.75rem', 
@@ -689,6 +697,93 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '3rem'}}>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    backgroundColor: currentPage === 1 ? '#f8fafc' : 'white',
+                    color: currentPage === 1 ? '#94a3b8' : '#475569',
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Previous
+                </button>
+                
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  const isActive = page === currentPage;
+                  
+                  if (totalPages <= 7 || page <= 3 || page >= totalPages - 2 || Math.abs(page - currentPage) <= 1) {
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        style={{
+                          padding: '0.75rem 1rem',
+                          borderRadius: '12px',
+                          border: isActive ? 'none' : '1px solid #e2e8f0',
+                          backgroundColor: isActive ? '#3b82f6' : 'white',
+                          color: isActive ? 'white' : '#475569',
+                          cursor: 'pointer',
+                          fontSize: '0.875rem',
+                          fontWeight: isActive ? '600' : '500',
+                          minWidth: '44px',
+                          transition: 'all 0.2s',
+                          boxShadow: isActive ? '0 4px 12px rgba(59,130,246,0.3)' : 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) {
+                            e.target.style.backgroundColor = '#f8fafc';
+                            e.target.style.borderColor = '#3b82f6';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) {
+                            e.target.style.backgroundColor = 'white';
+                            e.target.style.borderColor = '#e2e8f0';
+                          }
+                        }}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (page === 4 && currentPage > 5) {
+                    return <span key={page} style={{color: '#94a3b8', padding: '0.75rem 0.5rem'}}>...</span>;
+                  } else if (page === totalPages - 3 && currentPage < totalPages - 4) {
+                    return <span key={page} style={{color: '#94a3b8', padding: '0.75rem 0.5rem'}}>...</span>;
+                  }
+                  return null;
+                })}
+                
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    backgroundColor: currentPage === totalPages ? '#f8fafc' : 'white',
+                    color: currentPage === totalPages ? '#94a3b8' : '#475569',
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -696,4 +791,26 @@ export default function Home() {
       </div>
     </>
   );
+}
+
+export async function getStaticProps() {
+  try {
+    const products = await getAllProducts();
+    const formattedProducts = products.map(formatShopifyProduct);
+    
+    return {
+      props: {
+        products: formattedProducts,
+      },
+      revalidate: 60, // Revalidate every 60 seconds
+    };
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return {
+      props: {
+        products: [],
+      },
+      revalidate: 60,
+    };
+  }
 }

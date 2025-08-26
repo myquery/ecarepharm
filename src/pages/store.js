@@ -1,21 +1,30 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { dummyProducts, categories } from '../data/dummyProducts';
 import { formatCurrency, convertPrice } from '../utils/currency';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { getAllProducts, formatShopifyProduct } from '../lib/shopify';
 
-export default function Store() {
-  const [filteredProducts, setFilteredProducts] = useState(dummyProducts);
+export default function Store({ products }) {
+  const [allProducts, setAllProducts] = useState(products || []);
+  const [filteredProducts, setFilteredProducts] = useState(products || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Products');
+  const [categories, setCategories] = useState(['All Products']);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
-    let filtered = dummyProducts;
+    if (allProducts.length > 0) {
+      const uniqueCategories = ['All Products', ...new Set(allProducts.map(product => product.category))];
+      setCategories(uniqueCategories);
+    }
+  }, [allProducts]);
+
+  useEffect(() => {
+    let filtered = allProducts;
     if (selectedCategory !== 'All Products') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
@@ -26,7 +35,7 @@ export default function Store() {
       );
     }
     setFilteredProducts(filtered);
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, allProducts]);
 
   return (
     <>
@@ -167,7 +176,7 @@ export default function Store() {
                   
                   <div style={{position: 'relative', overflow: 'hidden', height: '240px'}}>
                     <img
-                      src={product.images.edges[0]?.node.url}
+                      src={product.image || '/placeholder.jpg'}
                       alt={product.title}
                       style={{
                         width: '100%', 
@@ -273,7 +282,7 @@ export default function Store() {
                           color: '#059669',
                           lineHeight: '1.2'
                         }}>
-                          {formatCurrency(convertPrice(product.priceRange.minVariantPrice.amount))}
+                          {formatCurrency(convertPrice(product.price))}
                         </div>
                         <div style={{
                           fontSize: '0.75rem', 
@@ -317,4 +326,26 @@ export default function Store() {
       </div>
     </>
   );
+}
+
+export async function getStaticProps() {
+  try {
+    const products = await getAllProducts();
+    const formattedProducts = products.map(formatShopifyProduct);
+    
+    return {
+      props: {
+        products: formattedProducts,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return {
+      props: {
+        products: [],
+      },
+      revalidate: 60,
+    };
+  }
 }

@@ -1,22 +1,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { dummyProducts } from '../../data/dummyProducts';
 import { formatCurrency, convertPrice } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { getProduct, getAllProducts, formatShopifyProduct } from '../../lib/shopify';
 
-export default function ProductDetail() {
+export default function ProductDetail({ product, relatedProducts }) {
   const router = useRouter();
-  const { handle } = router.query;
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
   const { addToCart, getCartCount, setIsCartOpen } = useCart();
 
-  // Show loading while router is not ready or handle is not available
-  if (!router.isReady || !handle) {
+  if (router.isFallback) {
     return (
       <>
         <Head>
@@ -49,8 +47,6 @@ export default function ProductDetail() {
       </>
     );
   }
-
-  const product = dummyProducts.find(p => p.handle === handle);
 
   if (!product) {
     return (
@@ -96,41 +92,7 @@ export default function ProductDetail() {
     addToCart(product, quantity);
   };
 
-  const images = [
-    product.images.edges[0]?.node.url,
-    'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&h=500&fit=crop',
-    'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=500&h=500&fit=crop'
-  ];
-
-  const relatedProducts = [
-    {
-      id: 'rel1',
-      handle: 'vitamin-c-tablets',
-      title: 'Vitamin C 1000mg Tablets',
-      description: 'High-potency vitamin C supplement for immune support and antioxidant protection.',
-      category: product.category,
-      priceRange: { minVariantPrice: { amount: '18.99' } },
-      images: { edges: [{ node: { url: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop' } }] }
-    },
-    {
-      id: 'rel2',
-      handle: 'calcium-magnesium',
-      title: 'Calcium + Magnesium Complex',
-      description: 'Essential minerals for bone health and muscle function support.',
-      category: product.category,
-      priceRange: { minVariantPrice: { amount: '22.50' } },
-      images: { edges: [{ node: { url: 'https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=400&fit=crop' } }] }
-    },
-    {
-      id: 'rel3',
-      handle: 'omega-3-premium',
-      title: 'Premium Omega-3 Fish Oil',
-      description: 'High-quality fish oil supplement rich in EPA and DHA for heart health.',
-      category: product.category,
-      priceRange: { minVariantPrice: { amount: '29.99' } },
-      images: { edges: [{ node: { url: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop' } }] }
-    }
-  ];
+  const images = product.images || [product.image];
 
   return (
     <>
@@ -162,7 +124,7 @@ export default function ProductDetail() {
             <div>
               <div style={{marginBottom: '1rem'}}>
                 <img
-                  src={images[selectedImage]}
+                  src={images[selectedImage] || product.image}
                   alt={product.title}
                   style={{width: '100%', height: '500px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #e2e8f0'}}
                 />
@@ -212,10 +174,10 @@ export default function ProductDetail() {
               <div style={{marginBottom: '2rem'}}>
                 <div style={{display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem'}}>
                   <span style={{fontSize: '2.5rem', fontWeight: 'bold', color: '#059669'}}>
-                    {formatCurrency(convertPrice(product.priceRange.minVariantPrice.amount))}
+                    {formatCurrency(convertPrice(product.price))}
                   </span>
                   <span style={{fontSize: '1.5rem', color: '#94a3b8', textDecoration: 'line-through'}}>
-                    {formatCurrency(convertPrice(product.priceRange.minVariantPrice.amount) * 1.3)}
+                    {formatCurrency(convertPrice(product.price) * 1.3)}
                   </span>
                 </div>
                 <p style={{fontSize: '0.875rem', color: '#059669', fontWeight: '500'}}>Save 23% on this item</p>
@@ -265,7 +227,7 @@ export default function ProductDetail() {
                   onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
                   onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
                 >
-                  Add to Cart • {formatCurrency(convertPrice(product.priceRange.minVariantPrice.amount) * quantity)}
+                  Add to Cart • {formatCurrency(convertPrice(product.price) * quantity)}
                 </button>
               </div>
 
@@ -510,7 +472,7 @@ export default function ProductDetail() {
                 }}>
                   <div style={{position: 'relative'}}>
                     <img
-                      src={relatedProduct.images.edges[0]?.node.url}
+                      src={relatedProduct.image || '/placeholder.jpg'}
                       alt={relatedProduct.title}
                       style={{width: '100%', height: '200px', objectFit: 'cover'}}
                     />
@@ -537,7 +499,7 @@ export default function ProductDetail() {
                     </p>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                       <div style={{fontSize: '1.25rem', fontWeight: 'bold', color: '#059669'}}>
-                        {formatCurrency(convertPrice(relatedProduct.priceRange.minVariantPrice.amount))}
+                        {formatCurrency(convertPrice(relatedProduct.price))}
                       </div>
                       <button style={{
                         backgroundColor: '#3b82f6',
@@ -567,4 +529,57 @@ export default function ProductDetail() {
       </div>
     </>
   );
+}
+
+export async function getStaticPaths() {
+  try {
+    const products = await getAllProducts();
+    const paths = products.map((product) => ({
+      params: { handle: product.node.handle },
+    }));
+
+    return {
+      paths,
+      fallback: true,
+    };
+  } catch (error) {
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
+}
+
+export async function getStaticProps({ params }) {
+  try {
+    const productData = await getProduct(params.handle);
+    
+    if (!productData) {
+      return {
+        notFound: true,
+      };
+    }
+
+    const product = formatShopifyProduct({ node: productData });
+    
+    // Get related products (same category)
+    const allProducts = await getAllProducts();
+    const relatedProducts = allProducts
+      .map(formatShopifyProduct)
+      .filter(p => p.category === product.category && p.id !== product.id)
+      .slice(0, 4);
+
+    return {
+      props: {
+        product,
+        relatedProducts,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return {
+      notFound: true,
+    };
+  }
 }
