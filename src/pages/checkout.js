@@ -3,26 +3,30 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { formatCurrency, convertPrice } from '../utils/currency';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import DeliverySelection from '../components/DeliverySelection';
+import AuthModal from '../components/AuthModal';
+import { initializePayment, generatePaymentReference } from '../utils/paystack';
 
 export default function Checkout() {
   const router = useRouter();
   const { cartItems, getCartTotal, getCartCount, clearCart } = useCart();
+  const { user, isAuthenticated } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    firstName: '',
-    lastName: '',
-    address: '',
+    email: user?.email || '',
+    firstName: user?.name?.split(' ')[0] || '',
+    lastName: user?.name?.split(' ')[1] || '',
+    address: user?.address || '',
     city: '',
     zipCode: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
+    phone: user?.phone || ''
   });
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('paystack');
   const [deliveryOption, setDeliveryOption] = useState('delivery');
   const [selectedDeliveryPartner, setSelectedDeliveryPartner] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -31,10 +35,76 @@ export default function Checkout() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    clearCart();
-    router.push('/order-confirmation');
+    
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setProcessing(true);
+
+    try {
+      const orderData = {
+        orderId: 'ORDER_' + Date.now(),
+        items: cartItems,
+        customer: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          phone: formData.phone,
+          address: `${formData.address}, ${formData.city}`
+        },
+        delivery: {
+          option: deliveryOption,
+          partner: selectedDeliveryPartner,
+          fee: deliveryFee
+        },
+        totals: {
+          subtotal,
+          deliveryFee,
+          tax,
+          total
+        }
+      };
+
+      if (paymentMethod === 'paystack') {
+        const paymentData = {
+          email: formData.email,
+          amount: total,
+          reference: generatePaymentReference(),
+          customerName: `${formData.firstName} ${formData.lastName}`,
+          orderId: orderData.orderId
+        };
+
+        const paymentResult = await initializePayment(paymentData);
+        
+        if (paymentResult.success) {
+          // Store order data for confirmation page
+          localStorage.setItem('lastOrder', JSON.stringify({
+            ...orderData,
+            paymentReference: paymentResult.reference,
+            paymentStatus: 'completed'
+          }));
+          
+          clearCart();
+          router.push('/order-confirmation');
+        }
+      } else {
+        // Handle other payment methods
+        localStorage.setItem('lastOrder', JSON.stringify({
+          ...orderData,
+          paymentStatus: 'pending'
+        }));
+        
+        clearCart();
+        router.push('/order-confirmation');
+      }
+    } catch (error) {
+      alert(error.message || 'Payment failed. Please try again.');
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -246,13 +316,13 @@ export default function Checkout() {
                 <div className="payment-methods" style={{marginBottom: '1.5rem'}}>
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod('card')}
+                    onClick={() => setPaymentMethod('paystack')}
                     style={{
                       flex: 1,
                       padding: '1rem',
-                      border: paymentMethod === 'card' ? '2px solid #3b82f6' : '2px solid #e2e8f0',
+                      border: paymentMethod === 'paystack' ? '2px solid #3b82f6' : '2px solid #e2e8f0',
                       borderRadius: '8px',
-                      background: paymentMethod === 'card' ? '#f0f9ff' : 'white',
+                      background: paymentMethod === 'paystack' ? '#f0f9ff' : 'white',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -261,7 +331,7 @@ export default function Checkout() {
                     }}
                   >
                     <span>💳</span>
-                    <span style={{fontWeight: '500'}}>Credit Card</span>
+                    <span style={{fontWeight: '500'}}>Paystack</span>
                   </button>
                   <button
                     type="button"
@@ -284,66 +354,42 @@ export default function Checkout() {
                   </button>
                 </div>
 
-                {paymentMethod === 'card' && (
-                  <div>
-                    <input
-                      type="text"
-                      name="cardNumber"
-                      placeholder="Card Number"
-                      value={formData.cardNumber}
-                      onChange={handleChange}
-                      required
-                      style={{width: '100%', padding: '0.875rem', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '1rem', marginBottom: '1rem', outline: 'none', transition: 'border-color 0.2s'}}
-                      onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                      onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
-                    />
-                    
-                    <div className="card-details" style={{marginBottom: '1.5rem'}}>
-                      <input
-                        type="text"
-                        name="expiryDate"
-                        placeholder="MM/YY"
-                        value={formData.expiryDate}
-                        onChange={handleChange}
-                        required
-                        style={{padding: '0.875rem', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s'}}
-                        onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                        onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
-                      />
-                      <input
-                        type="text"
-                        name="cvv"
-                        placeholder="CVV"
-                        value={formData.cvv}
-                        onChange={handleChange}
-                        required
-                        style={{padding: '0.875rem', border: '2px solid #e2e8f0', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s'}}
-                        onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                        onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
-                      />
-                    </div>
+                {paymentMethod === 'paystack' && (
+                  <div style={{padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', marginBottom: '1rem'}}>
+                    <p style={{margin: 0, fontSize: '0.875rem', color: '#64748b'}}>
+                      You will be redirected to Paystack to complete your payment securely.
+                      Accepted: Visa, Mastercard, Verve, Bank Transfer, USSD
+                    </p>
+                  </div>
+                )}
+                
+                {paymentMethod === 'transfer' && (
+                  <div style={{padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', marginBottom: '1rem'}}>
+                    <p style={{margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#64748b', fontWeight: '600'}}>Bank Transfer Details:</p>
+                    <p style={{margin: 0, fontSize: '0.875rem', color: '#64748b'}}>Account: 1234567890 | Bank: GTBank | Name: eCare Pharmacy Ltd</p>
                   </div>
                 )}
 
                 <button
                   onClick={handleSubmit}
+                  disabled={processing || (!isAuthenticated && !isAuthModalOpen)}
                   style={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+                    background: processing ? '#94a3b8' : 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
                     color: 'white',
                     padding: '1rem 2rem',
                     borderRadius: '8px',
                     border: 'none',
                     fontSize: '1rem',
                     fontWeight: '600',
-                    cursor: 'pointer',
+                    cursor: processing ? 'not-allowed' : 'pointer',
                     width: '100%',
                     boxShadow: '0 4px 12px rgba(59,130,246,0.3)',
                     transition: 'all 0.3s ease'
                   }}
-                  onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-                  onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+                  onMouseEnter={(e) => !processing && (e.target.style.transform = 'translateY(-2px)')}
+                  onMouseLeave={(e) => !processing && (e.target.style.transform = 'translateY(0)')}
                 >
-                  Complete Order • {formatCurrency(convertPrice(total.toString()))}
+                  {processing ? 'Processing...' : (!isAuthenticated ? 'Sign In to Complete Order' : `Complete Order • ${formatCurrency(convertPrice(total.toString()))}`)}
                 </button>
               </div>
             </div>
@@ -404,6 +450,11 @@ export default function Checkout() {
             </div>
           </div>
         </div>
+        
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
       </div>
       
       <style jsx>{`

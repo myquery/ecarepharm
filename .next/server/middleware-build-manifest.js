@@ -24,15 +24,15 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/logistics-partner": [
+    "/prescription-upload": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/logistics-partner.js"
+      "static/chunks/pages/prescription-upload.js"
     ],
-    "/store": [
+    "/products/[handle]": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/store.js"
+      "static/chunks/pages/products/[handle].js"
     ]
   },
   "ampFirstPages": []

@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { Bars3Icon, HeartIcon, ShoppingBagIcon, PhoneIcon, TruckIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import { Bars3Icon, HeartIcon, ShoppingBagIcon, PhoneIcon, TruckIcon, UserIcon } from '@heroicons/react/24/outline';
 import { theme } from '../config/theme';
+import AuthModal from './AuthModal';
 
 export default function Header() {
   const { getCartCount, setIsCartOpen } = useCart();
   const { getWishlistCount } = useWishlist();
+  const { user, logout, isAuthenticated } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -93,6 +97,44 @@ export default function Header() {
           )}
           
           <div style={{display: 'flex', alignItems: 'center', gap: isMobile ? '0.5rem' : '1rem'}}>
+            {isAuthenticated ? (
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                <span style={{color: 'white', fontSize: '0.875rem'}}>Hi, {user?.name}</span>
+                <button
+                  onClick={logout}
+                  style={{
+                    background: 'rgba(255,255,255,0.2)',
+                    border: 'none',
+                    color: 'white',
+                    padding: '0.5rem',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '0.5rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <UserIcon className="w-6 h-6" />
+                {!isMobile && <span>Sign In</span>}
+              </button>
+            )}
+            
             <button
               onClick={() => window.location.href = '/wishlist'}
               style={{
@@ -192,6 +234,11 @@ export default function Header() {
         </div>
         )}
       </div>
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </header>
   );
 }
