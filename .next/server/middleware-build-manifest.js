@@ -9,6 +9,11 @@ self.__BUILD_MANIFEST = {
   "lowPriorityFiles": [],
   "rootMainFiles": [],
   "pages": {
+    "/": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/index.js"
+    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -19,15 +24,10 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/prescription-upload": [
+    "/store": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/prescription-upload.js"
-    ],
-    "/wholesale": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/wholesale.js"
+      "static/chunks/pages/store.js"
     ]
   },
   "ampFirstPages": []
