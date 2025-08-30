@@ -224,8 +224,8 @@ export default function Header() {
         {!isMobile && (
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', fontSize: '0.875rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '1rem'}}>
           <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-            <PhoneIcon className="w-4 h-4" />
-            <span>+234 (080) 123-4567-23</span>
+            <PhoneIcon className="w-4 h-4" width={25}/>
+            <span>+234 803 732 5673</span>
           </div>
           <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
             <TruckIcon className="w-5 h-5" />
