@@ -3,6 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
+  "/store": "pages/store.js",
   "/order-confirmation": "pages/order-confirmation.js",
-  "/store": "pages/store.js"
+  "/logistics-partner": "pages/logistics-partner.js"
 }

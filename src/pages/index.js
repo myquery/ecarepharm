@@ -9,8 +9,40 @@ import LiveChat from '../components/LiveChat';
 import { getAllProducts, formatShopifyProduct } from '../lib/shopify';
 
 export default function Home({ products }) {
-  const [allProducts, setAllProducts] = useState(products || []);
-  const [filteredProducts, setFilteredProducts] = useState(products || []);
+  // Fallback products if Shopify fails
+  const fallbackProducts = [
+    {
+      id: 'fallback-1',
+      title: 'Paracetamol 500mg',
+      handle: 'paracetamol-500mg',
+      description: 'Pain relief and fever reducer tablets',
+      image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=400&fit=crop',
+      price: 2500,
+      category: 'Pain Relief'
+    },
+    {
+      id: 'fallback-2', 
+      title: 'Vitamin C 1000mg',
+      handle: 'vitamin-c-1000mg',
+      description: 'Immune system support supplement',
+      image: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=400&fit=crop',
+      price: 3500,
+      category: 'Vitamins'
+    },
+    {
+      id: 'fallback-3',
+      title: 'First Aid Kit',
+      handle: 'first-aid-kit',
+      description: 'Complete emergency medical supplies',
+      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop',
+      price: 15750,
+      category: 'Medical Supplies'
+    }
+  ];
+  
+  const initialProducts = products && products.length > 0 ? products : fallbackProducts;
+  const [allProducts, setAllProducts] = useState(initialProducts);
+  const [filteredProducts, setFilteredProducts] = useState(initialProducts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Products');
   const [categories, setCategories] = useState(['All Products']);
@@ -809,8 +841,12 @@ export default function Home({ products }) {
 
 export async function getStaticProps() {
   try {
+    console.log('Fetching products from Shopify...');
     const products = await getAllProducts();
+    console.log('Raw products from Shopify:', products.length);
+    
     const formattedProducts = products.map(formatShopifyProduct);
+    console.log('Formatted products:', formattedProducts.length);
     
     return {
       props: {
@@ -822,7 +858,7 @@ export async function getStaticProps() {
     console.error('Error fetching products:', error);
     return {
       props: {
-        products: [],
+        products: [], // Will use fallback products in component
       },
       revalidate: 60,
     };

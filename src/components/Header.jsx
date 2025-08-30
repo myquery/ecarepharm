@@ -69,11 +69,12 @@ export default function Header() {
           
           {/* Navigation Menu */}
           {!isMobile ? (
-            <nav style={{display: 'flex', alignItems: 'center', gap: '2rem'}}>
+            <nav style={{display: 'flex', alignItems: 'center', gap: '1.5rem'}}>
               <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Home</a>
               <a href="/store" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Store</a>
               <a href="/prescription-upload" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Prescription</a>
               <a href="/wholesale" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Wholesale</a>
+              <a href="/logistics-partner" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', transition: 'opacity 0.3s'}} onMouseEnter={(e) => e.target.style.opacity = '0.8'} onMouseLeave={(e) => e.target.style.opacity = '1'}>Delivery</a>
             </nav>
           ) : (
             <button
@@ -173,14 +174,15 @@ export default function Header() {
             <a href="/store" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Store</a>
             <a href="/prescription-upload" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Prescription</a>
             <a href="/wholesale" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Wholesale</a>
+            <a href="/logistics-partner" style={{color: 'white', textDecoration: 'none', fontSize: '1rem', fontWeight: '500', padding: '0.5rem 0'}}>Delivery</a>
           </nav>
         )}
         
         {/* Contact Info Row */}
         {!isMobile && (
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', fontSize: '0.875rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '1rem'}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem',}}>
-            <PhoneIcon className="w-4 h-4" width={25}/>
+          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+            <PhoneIcon className="w-4 h-4" />
             <span>+234 (080) 123-4567-23</span>
           </div>
           <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { formatCurrency, convertPrice } from '../utils/currency';
 import { useCart } from '../context/CartContext';
+import DeliverySelection from '../components/DeliverySelection';
 
 export default function Checkout() {
   const router = useRouter();
@@ -19,6 +20,8 @@ export default function Checkout() {
     cvv: ''
   });
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [deliveryOption, setDeliveryOption] = useState('delivery');
+  const [selectedDeliveryPartner, setSelectedDeliveryPartner] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -39,9 +42,9 @@ export default function Checkout() {
   };
 
   const subtotal = getCartTotal();
-  const shipping = subtotal > 50 ? 0 : 5000;
+  const deliveryFee = deliveryOption === 'pickup' ? 0 : (selectedDeliveryPartner?.fee || 2000);
   const tax = subtotal * 0.075;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + deliveryFee + tax;
 
   if (cartItems.length === 0) {
     return (
@@ -101,9 +104,65 @@ export default function Checkout() {
                 />
               </div>
 
+              {/* Delivery Options */}
               <div style={{backgroundColor: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', marginBottom: '1.5rem'}}>
                 <h2 style={{fontSize: '1.25rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1.5rem'}}>
-                  Shipping Address
+                  Delivery Options
+                </h2>
+                
+                <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem'}}>
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryOption('delivery')}
+                    style={{
+                      flex: 1,
+                      padding: '1rem',
+                      border: deliveryOption === 'delivery' ? '2px solid var(--color-primary)' : '2px solid #e2e8f0',
+                      borderRadius: '8px',
+                      background: deliveryOption === 'delivery' ? '#f0fdf4' : 'white',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <span>🚚</span>
+                    <span style={{fontWeight: '500'}}>Home Delivery</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryOption('pickup')}
+                    style={{
+                      flex: 1,
+                      padding: '1rem',
+                      border: deliveryOption === 'pickup' ? '2px solid var(--color-primary)' : '2px solid #e2e8f0',
+                      borderRadius: '8px',
+                      background: deliveryOption === 'pickup' ? '#f0fdf4' : 'white',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <span>🏪</span>
+                    <span style={{fontWeight: '500'}}>Store Pickup</span>
+                  </button>
+                </div>
+                
+                {deliveryOption === 'pickup' && (
+                  <div style={{padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0'}}>
+                    <h4 style={{fontSize: '1rem', fontWeight: '600', color: 'var(--color-secondary-dark)', marginBottom: '0.5rem'}}>Pickup Location</h4>
+                    <p style={{color: '#64748b', fontSize: '0.875rem', margin: 0}}>eCare Pharmacy Main Store<br/>123 Health Plaza, Victoria Island, Lagos</p>
+                    <p style={{color: 'var(--color-primary)', fontSize: '0.875rem', fontWeight: '600', marginTop: '0.5rem'}}>Ready in 30 minutes • FREE</p>
+                  </div>
+                )}
+              </div>
+
+              <div style={{backgroundColor: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9', marginBottom: '1.5rem'}}>
+                <h2 style={{fontSize: '1.25rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1.5rem'}}>
+                  {deliveryOption === 'delivery' ? 'Delivery Address' : 'Contact Information'}
                 </h2>
                 
                 <div className="form-row" style={{marginBottom: '1rem'}}>
@@ -168,6 +227,16 @@ export default function Checkout() {
                   />
                 </div>
               </div>
+
+              {/* Delivery Partner Selection */}
+              {deliveryOption === 'delivery' && (
+                <div style={{marginBottom: '1.5rem'}}>
+                  <DeliverySelection 
+                    customerAddress={formData.address ? `${formData.address}, ${formData.city}` : 'Your delivery location'}
+                    onSelectDelivery={setSelectedDeliveryPartner}
+                  />
+                </div>
+              )}
 
               <div style={{backgroundColor: 'white', borderRadius: '12px', padding: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9'}}>
                 <h2 style={{fontSize: '1.25rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1.5rem'}}>
@@ -314,9 +383,12 @@ export default function Checkout() {
                   <span style={{fontWeight: '600'}}>{formatCurrency(convertPrice(subtotal.toString()))}</span>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
-                  <span style={{color: '#64748b'}}>Shipping</span>
-                  <span style={{fontWeight: '600', color: shipping === 0 ? '#059669' : '#1e293b'}}>
-                    {shipping === 0 ? 'Free' : formatCurrency(shipping)}
+                  <span style={{color: '#64748b'}}>
+                    {deliveryOption === 'pickup' ? 'Pickup' : 'Delivery'}
+                    {selectedDeliveryPartner && ` (${selectedDeliveryPartner.name})`}
+                  </span>
+                  <span style={{fontWeight: '600', color: deliveryFee === 0 ? '#059669' : '#1e293b'}}>
+                    {deliveryFee === 0 ? 'Free' : formatCurrency(deliveryFee)}
                   </span>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
