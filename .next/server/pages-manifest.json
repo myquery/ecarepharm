@@ -2,8 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/wishlist": "pages/wishlist.js",
   "/": "pages/index.js",
-  "/prescription-upload": "pages/prescription-upload.js",
-  "/products/[handle]": "pages/products/[handle].js"
+  "/store": "pages/store.js",
+  "/prescription-upload": "pages/prescription-upload.js"
 }
