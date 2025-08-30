@@ -2,9 +2,13 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { CloudArrowUpIcon, DocumentTextIcon, UserIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import AuthModal from '../components/AuthModal';
+import { CloudArrowUpIcon, DocumentTextIcon, UserIcon, PhoneIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function PrescriptionUpload() {
+  const { user, isAuthenticated } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     patientName: '',
     patientAge: '',
@@ -15,10 +19,41 @@ export default function PrescriptionUpload() {
     prescriptionFile: null
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle prescription upload
-    alert('Prescription uploaded successfully! We will contact you within 2 hours.');
+    
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    try {
+      // Mock API call - replace with actual endpoint
+      const prescriptionData = {
+        ...formData,
+        customerId: user.id,
+        customerEmail: user.email,
+        uploadedAt: new Date().toISOString()
+      };
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      alert('Prescription uploaded successfully! Our pharmacists will review it within 2 hours and contact you.');
+      
+      // Reset form
+      setFormData({
+        patientName: '',
+        patientAge: '',
+        patientSex: '',
+        doctorName: '',
+        doctorPhone: '',
+        doctorEmail: '',
+        prescriptionFile: null
+      });
+    } catch (error) {
+      alert('Failed to upload prescription. Please try again.');
+    }
   };
 
   return (
@@ -40,6 +75,25 @@ export default function PrescriptionUpload() {
                 Upload your prescription for professional verification and fulfillment
               </p>
             </div>
+
+            {!isAuthenticated && (
+              <div style={{
+                backgroundColor: '#fef3c7',
+                border: '1px solid #f59e0b',
+                borderRadius: '12px',
+                padding: '1rem',
+                marginBottom: '2rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
+              }}>
+                <ExclamationTriangleIcon style={{width: '24px', height: '24px', color: '#f59e0b'}} />
+                <div>
+                  <p style={{margin: 0, color: '#92400e', fontWeight: '600'}}>Account Required</p>
+                  <p style={{margin: 0, color: '#92400e', fontSize: '0.875rem'}}>Please sign in or create an account to upload prescriptions</p>
+                </div>
+              </div>
+            )}
 
             <div style={{backgroundColor: 'white', borderRadius: '20px', padding: '2rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)'}}>
               <form onSubmit={handleSubmit}>
@@ -168,6 +222,11 @@ export default function PrescriptionUpload() {
             </div>
           </div>
         </div>
+        
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+        />
         
         <Footer />
       </div>

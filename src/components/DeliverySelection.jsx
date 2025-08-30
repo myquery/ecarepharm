@@ -6,49 +6,71 @@ export default function DeliverySelection({ customerAddress, onSelectDelivery })
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Mock delivery partners data
   useEffect(() => {
-    // Simulate API call to get available partners
-    setTimeout(() => {
-      const partners = [
-        {
-          id: 'partner-1',
-          name: 'John Express',
-          rating: 4.8,
-          deliveryTime: '20-30 mins',
-          fee: 1500,
-          vehicle: 'Motorcycle',
-          distance: '2.3 km',
-          completedDeliveries: 245,
-          avatar: '👨‍🦱'
-        },
-        {
-          id: 'partner-2', 
-          name: 'Sarah Quick',
-          rating: 4.9,
-          deliveryTime: '25-35 mins',
-          fee: 1800,
-          vehicle: 'Car',
-          distance: '3.1 km',
-          completedDeliveries: 189,
-          avatar: '👩‍🦰'
-        },
-        {
-          id: 'partner-3',
-          name: 'Mike Fast',
-          rating: 4.7,
-          deliveryTime: '15-25 mins', 
-          fee: 2000,
-          vehicle: 'Bicycle',
-          distance: '1.8 km',
-          completedDeliveries: 156,
-          avatar: '👨‍🦲'
-        }
-      ];
-      setAvailablePartners(partners);
-      setLoading(false);
-    }, 2000);
+    const fetchPartners = async () => {
+      try {
+        const area = customerAddress?.split(',')[1]?.trim() || 'Lagos';
+        const response = await fetch(`${process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:3001'}/api/delivery/available/${area}`);
+        const data = await response.json();
+        
+        const partnersWithEstimates = data.partners.map(partner => ({
+          ...partner,
+          id: partner.id,
+          fee: partner.delivery_fee,
+          deliveryTime: getEstimatedTime(partner.vehicle),
+          distance: getRandomDistance(),
+          completedDeliveries: partner.completed_deliveries
+        }));
+        
+        setAvailablePartners(partnersWithEstimates);
+      } catch (error) {
+        console.error('Error fetching partners:', error);
+        const fallbackPartners = [
+          {
+            id: 'partner-1',
+            name: 'John Express',
+            rating: 4.8,
+            deliveryTime: '20-30 mins',
+            fee: 1500,
+            vehicle: 'Motorcycle',
+            distance: '2.3 km',
+            completedDeliveries: 245,
+            avatar: '👨🦱'
+          },
+          {
+            id: 'partner-2', 
+            name: 'Sarah Quick',
+            rating: 4.9,
+            deliveryTime: '25-35 mins',
+            fee: 1800,
+            vehicle: 'Car',
+            distance: '3.1 km',
+            completedDeliveries: 189,
+            avatar: '👩🦰'
+          }
+        ];
+        setAvailablePartners(fallbackPartners);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    setTimeout(fetchPartners, 1500);
   }, [customerAddress]);
+
+  const getEstimatedTime = (vehicle) => {
+    const times = {
+      'motorcycle': '15-25 mins',
+      'bicycle': '20-30 mins', 
+      'car': '25-35 mins',
+      'van': '30-40 mins'
+    };
+    return times[vehicle] || '20-30 mins';
+  };
+
+  const getRandomDistance = () => {
+    return `${(Math.random() * 3 + 1).toFixed(1)} km`;
+  };
 
   const handleSelectPartner = (partner) => {
     setSelectedPartner(partner);
