@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import LiveChat from '../components/LiveChat';
 import { getAllProducts, formatShopifyProduct } from '../lib/shopify';
 
 export default function Home({ products }) {
@@ -99,7 +100,9 @@ export default function Home({ products }) {
                 Discover quality medications and healthcare products with professional consultation from certified pharmacists
               </p>
               <div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start'}}>
-                <button style={{
+                <button 
+                  onClick={() => window.location.href = '/store'}
+                  style={{
                   backgroundColor: 'white',
                   color: '#1e40af',
                   padding: '1rem 2rem',
@@ -121,7 +124,9 @@ export default function Home({ products }) {
                 }}>
                   Shop Now
                 </button>
-                <button style={{
+                <button 
+                  onClick={() => window.location.href = '#about'}
+                  style={{
                   backgroundColor: 'transparent',
                   color: 'white',
                   padding: '1rem 2rem',
@@ -796,6 +801,7 @@ export default function Home({ products }) {
         </section>
 
         <Footer />
+        <LiveChat />
       </div>
     </>
   );
